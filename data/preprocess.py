@@ -6,19 +6,17 @@ from pandas.tseries.offsets import BDay
 import numpy as np
 from config import BASE_DIR
 
-def main():
-    # get ticker symbol list
+def main(raw_dict):
+    # get ticker symbols 
 
-    sys.path.append(os.path.abspath('../'))
-    from config import ticker_symbols
+    ticker_symbols = list(raw_dict.keys())
+    ticker_symbols.remove('SPY')
 
     # extract SPY data
 
-    SPY_PATH = os.path.join(BASE_DIR, 'data', 'by_stock', 'SPY.csv')
-    spy_data = pd.read_csv(SPY_PATH)
+    spy_data = raw_dict['SPY']
 
     spy_data['Date'] = pd.to_datetime(spy_data['Date'])
-
     last_date = spy_data['Date'].max()
     next_date = last_date + BDay(1)
 
@@ -41,8 +39,10 @@ def main():
         'Date',
         'SPY_1d_lagged_return',
         'SPY_3d_lagged_return',
-        'SPY_5d_lagged_return',
+        'SPY_5d_lagged_return'
     ]]
+
+    eng_dict = {}
 
     for ticker in ticker_symbols:
 
@@ -52,8 +52,7 @@ def main():
 
         # extract pulled data
 
-        TICKER_PATH = os.path.join(BASE_DIR, 'data','by_stock',f'{ticker}.csv')
-        data = pd.read_csv(TICKER_PATH)        
+        data = raw_dict[ticker]
         
         data['Date'] = pd.to_datetime(data['Date'])
 
@@ -114,7 +113,9 @@ def main():
 
         # save finalized data to csv
 
-        data.to_csv(TICKER_PATH, index=False)        
+        eng_dict[ticker] = data
+    
+    return eng_dict
 
 if __name__ == '__main__':
     main()
