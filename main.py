@@ -1,19 +1,28 @@
 from data import fetch
 from data import preprocess
-from model import model
-from model import evaluate
-from model import visualize
+from data import aggregate
+from model import tune
+from model import train
+from model import predict
+from model import write
+
+from output import score
 
 def main():
-    fetch.main()
+    data = fetch.main()
 
-    preprocess.main()
+    eng_data = preprocess.main(data)
+    mega_df = aggregate.main(eng_data)
 
-    model.main()
+    tune.main()
 
-    evaluate.main()
+    train.main()
 
-    #visualize.main()
+    predict.main()
+
+    write.main()
+
+    score.main()
 
 if __name__ == '__main__':
     main() 
