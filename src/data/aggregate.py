@@ -8,19 +8,19 @@ def main(eng_dict):
     # create mega_df
 
     cols = eng_dict[ticker_symbols[0]].columns
+
     mega_df = pd.DataFrame(columns=cols)
 
     # loop through tickers, concat all DFs, and set index
 
-    for ticker in ticker_symbols:
+    for i, ticker in enumerate(ticker_symbols):
         eng_dict[ticker]['ticker'] = ticker
-
         mega_df = pd.concat([mega_df, eng_dict[ticker]])
 
     #reorder cols
 
     cols = ['ticker', 'Date'] + [c for c in mega_df.columns if c not in ['ticker', 'Date']]
-    
+
     return mega_df[cols]
 
 if __name__ == '__main__':

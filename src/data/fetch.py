@@ -1,14 +1,9 @@
 import yfinance as yf
-import sys
-import os
 import pandas as pd
-import shutil
-from config import BASE_DIR
 
 def main():
     # get ticker symbol list
 
-    sys.path.append(os.path.abspath('..'))
     from config import ticker_symbols
 
     #####################

@@ -1,29 +1,26 @@
-import sys
-import os
 import pandas as pd
 from ta.trend import sma_indicator
 from pandas.tseries.offsets import BDay
 import numpy as np
-from config import BASE_DIR
+from src.utils import last_completed_session, next_n_sessions
 
 def main(raw_dict):
     # get ticker symbols 
 
-    ticker_symbols = list(raw_dict.keys())
+    ticker_symbols = list( raw_dict.keys() )
     ticker_symbols.remove('SPY')
 
     # extract SPY data
 
     spy_data = raw_dict['SPY']
-
     spy_data['Date'] = pd.to_datetime(spy_data['Date'])
-    last_date = spy_data['Date'].max()
-    next_date = last_date + BDay(1)
+
+    next_date = next_n_sessions(1)[0]
 
     # append prediction row to SPY df
 
     new_row = {col: np.nan for col in spy_data.columns}
-    new_row['Date'] = pd.to_datetime(next_date)
+    new_row['Date'] = next_date
 
     spy_data.loc[len(spy_data)] = new_row
 
@@ -43,6 +40,7 @@ def main(raw_dict):
     ]]
 
     eng_dict = {}
+    pred_df = pd.DataFrame()
 
     for ticker in ticker_symbols:
 
@@ -58,11 +56,8 @@ def main(raw_dict):
 
         # append prediction row to ticker df
 
-        last_date = data['Date'].max()
-        next_date = last_date + BDay(1)
-
         new_row = {col: np.nan for col in data.columns}
-        new_row['Date'] = pd.to_datetime(next_date)
+        new_row['Date'] = next_date
     
         data.loc[len(data)] = new_row
 
@@ -111,11 +106,16 @@ def main(raw_dict):
         feature_columns = data.columns.difference(['target_daily_return'])
         data.dropna(subset=feature_columns, inplace=True)
 
-        # save finalized data to csv
+        # move prediction row to pred_df
+
+        pred_df.concat( data[data['target_daily_return'] == np.nan and data['Date'] == next_date] )
+        data.dropna(subset=['Date'], inplace=True)
+
+        # save to dict
 
         eng_dict[ticker] = data
     
-    return eng_dict
+    return eng_dict, pred_df
 
 if __name__ == '__main__':
     main()
