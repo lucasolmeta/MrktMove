@@ -2,7 +2,7 @@ import pandas as pd
 from ta.trend import sma_indicator
 from pandas.tseries.offsets import BDay
 import numpy as np
-from src.utils import last_completed_session, next_n_sessions
+from src.utils import date
 
 def main(raw_dict):
     # get ticker symbols 
@@ -15,7 +15,7 @@ def main(raw_dict):
     spy_data = raw_dict['SPY']
     spy_data['Date'] = pd.to_datetime(spy_data['Date'])
 
-    next_date = next_n_sessions(1)[0]
+    next_date = date.next_n_sessions(1)[0]
 
     # append prediction row to SPY df
 
@@ -79,7 +79,7 @@ def main(raw_dict):
 
         data['1d_lagged_return'] = data['Close'].shift(1) / data['Close'].shift(2) - 1
         data['3d_lagged_return'] = data['Close'].shift(1) / data['Close'].shift(4) - 1
-        data['5y_lagged_return'] = data['Close'].shift(1) / data['Close'].shift(6) - 1
+        data['5d_lagged_return'] = data['Close'].shift(1) / data['Close'].shift(6) - 1
 
         # volatility related features
 
@@ -116,6 +116,3 @@ def main(raw_dict):
         eng_dict[ticker] = data
     
     return eng_dict, pred_df
-
-if __name__ == '__main__':
-    main()

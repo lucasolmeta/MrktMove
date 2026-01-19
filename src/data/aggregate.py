@@ -22,6 +22,3 @@ def main(eng_dict):
     cols = ['ticker', 'Date'] + [c for c in mega_df.columns if c not in ['ticker', 'Date']]
 
     return mega_df[cols].sort_values('Date')
-
-if __name__ == '__main__':
-    main()
